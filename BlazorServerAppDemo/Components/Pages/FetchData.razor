@@ -1,0 +1,107 @@
+﻿@page "/fetchdata"
+@using FrontEndApi.Models.Response
+@inject HttpClient Http
+
+<h3>Invoke API Example</h3>
+<p>
+    This example demonstrates invoking a webapi from Blazer and displaying the response.
+
+</p>
+<p class="text-info">
+   <mark> Blazor App </mark> ↔ <mark> FrontEndApi (internal) </mark> ↔ <mark> External Apis </mark>
+</p>
+<ul class="text-secondary">
+    <li> Blazor App : UI (Wasm) runs on Browser </li>
+    <li> FrontEndApi : Blazor App interacts with this API to get data from database or external services</li>
+    <li> External Apis : Third-party / External systems </li>
+</ul>
+<hr />
+
+<button @onclick="InvokeApisGet" class="btn btn-primary">Invoke APIs GET</button>
+<button @onclick="InvokeApisPost" class="btn btn-primary">Invoke APIs POST </button>
+<br />
+<br />
+@if (isLoadingComplete)
+{
+    <div class="alert alert-info fade show" role="alert">
+        @if (result is not null)
+        {
+
+            <div>
+                @result.ExternalAPI_1_Response
+            </div>
+            <br />
+            <div>
+                @result.ExternalAPI_2_Response
+            </div>
+        }
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(statusText))
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        @statusText
+    </div>
+}
+
+
+@code {
+    private bool isLoadingComplete = false;
+    private string statusText = "";
+
+    private InvokeApisResponse? result;
+    string apiUrl = "https://localhost:8001/api/FrontEndApi/";
+
+    private async Task InvokeApisGet()
+    {
+        isLoadingComplete = false;
+        result = null;
+
+        try
+        {
+            statusText = "Loading...";
+            var response = await Http.GetAsync(apiUrl + "GetProducts?SearchText=SomeText");
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                statusText = "Unable to get data from InvokeApis. Please try again later. (Error Code: N200)";
+            }
+            result = await response.Content.ReadFromJsonAsync<InvokeApisResponse>();
+            statusText = "Success!";
+        }
+        catch (Exception ex)
+        {
+            statusText = $"ERROR: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingComplete = true;
+        }
+    }
+
+    private async Task InvokeApisPost()
+    {
+        isLoadingComplete = false;
+        result = null;
+        try
+        {
+            statusText = "Loading...";
+            var request = new { SearchText = "SomeSearchText" };
+            var response = await Http.PostAsJsonAsync(apiUrl + "GetServices", request);
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                statusText = "Unable to get data from InvokeApis. Please try again later. (Error Code: N200)";
+            }
+            result = await response.Content.ReadFromJsonAsync<InvokeApisResponse>();
+            statusText = "Success!";
+        }
+        catch (Exception ex)
+        {
+            statusText = $"ERROR: {ex.Message}";
+        }
+        finally
+        {
+            isLoadingComplete = true;
+        }
+    }
+}

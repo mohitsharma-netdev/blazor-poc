@@ -1,0 +1,55 @@
+﻿@page "/todo"
+@inject BlazorServerAppDemo.Services.TodoService TodoService
+
+<h3>Todo List</h3>
+<p class="text-secondary">
+    Below input text box has a databinding using @@bind attribute.
+    This enables two way databinding between the input control and the "textNewTodo" property.
+</p>
+<p>
+    This setup demonstrates:
+
+    Component Architecture: Creating and routing between components with data-binding.
+    Service Layer: Implementing a service for managing Todo items.
+    Dependency Injection: Registering and injecting services.
+</p>
+<hr />
+
+ 
+
+<input @bind="newTodoTitle" placeholder="Add new todo" />
+<button @onclick="AddTodo" class="btn btn-sm btn-primary">Add</button>
+
+<ul class="list-unstyled">
+    @foreach (var todo in TodoService.GetTodos())
+    {
+        <li>
+            <input type="checkbox" checked="@todo.IsCompleted" @onchange="(e) => ToggleTodoItem(todo.Id, (bool)e.Value)" />
+            @todo.Title
+            <button @onclick="() => RemoveTodoItem(todo.Id)" class="btn btn-sm btn-outline-danger pt-0 pb-0 ps-1 pe-1 ms-4">X</button>
+        </li>
+    }
+</ul>
+
+@code {
+    private string newTodoTitle;
+
+    private void AddTodo()
+    {
+        if (!string.IsNullOrWhiteSpace(newTodoTitle))
+        {
+            TodoService.AddTodoItem(new BlazorServerAppDemo.Models.TodoItem { Title = newTodoTitle });
+            newTodoTitle = string.Empty;
+        }
+    }
+
+    private void ToggleTodoItem(int id, bool isChecked)
+    {
+        TodoService.ToggleTodoItem(id, isChecked);
+    }
+
+    private void RemoveTodoItem(int id)
+    {
+        TodoService.RemoveTodoItem(id);
+    }
+}
