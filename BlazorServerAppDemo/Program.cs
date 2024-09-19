@@ -1,4 +1,5 @@
 using BlazorServerAppDemo.Components;
+using BlazorServerAppDemo.Middleware;
 using BlazorServerAppDemo.Services;
 
 namespace BlazorServerAppDemo
@@ -13,12 +14,15 @@ namespace BlazorServerAppDemo
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
-            // Register the TodoService
+            // Register the TodoService (depedency injections, configuring services)
             builder.Services.AddSingleton<TodoService>();
 
             builder.Services.AddScoped(sp => new HttpClient ());
 
             var app = builder.Build();
+
+            // Use CustomMiddleware
+            app.UseMiddleware<CustomMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
