@@ -15,7 +15,7 @@ namespace BlazorServerAppDemo
                 .AddInteractiveServerComponents();
 
             // Register the TodoService (depedency injections, configuring services)
-            builder.Services.AddSingleton<TodoService>();
+            builder.Services.AddScoped<ITodoService, TodoService>();
 
             builder.Services.AddScoped(sp => new HttpClient ());
 

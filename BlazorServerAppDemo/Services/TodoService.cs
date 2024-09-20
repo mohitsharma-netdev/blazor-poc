@@ -2,7 +2,15 @@
 
 namespace BlazorServerAppDemo.Services;
 
-public class TodoService
+public interface ITodoService
+{
+    IEnumerable<TodoItemModel> GetTodos();
+    void AddTodoItem(TodoItemModel item);
+    void ToggleTodoItem(int id, bool isCompleted);
+    void RemoveTodoItem(int id);
+}
+
+public class TodoService : ITodoService
 {
     private readonly List<TodoItemModel> _todos = new();
 
