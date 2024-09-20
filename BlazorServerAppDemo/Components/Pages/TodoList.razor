@@ -15,21 +15,18 @@
 </p>
 <hr />
 
- 
+@page "/todolist"
+@using BlazorServerAppDemo.Models
 
-<input @bind="newTodoTitle" placeholder="Add new todo" />
+<h3>Todo List</h3>
+<input @bind="newTodoTitle" placeholder="New todo" />
 <button @onclick="AddTodo" class="btn btn-sm btn-primary">Add</button>
 
-<ul class="list-unstyled">
-    @foreach (var todo in TodoService.GetTodos())
-    {
-        <li>
-            <input type="checkbox" checked="@todo.IsCompleted" @onchange="(e) => ToggleTodoItem(todo.Id, (bool)e.Value)" />
-            @todo.Title
-            <button @onclick="() => RemoveTodoItem(todo.Id)" class="btn btn-sm btn-outline-danger pt-0 pb-0 ps-1 pe-1 ms-4">X</button>
-        </li>
-    }
-</ul>
+@foreach (var item in TodoService.GetTodos())
+{
+    <TodoItem Title="@item.Title" IsComplete="@item.IsComplete" OnRemove="@(() => RemoveTodoItem(item))" OnCompleteChanged="@((isComplete) => MarkAsComplete(item, isComplete))" />
+}
+
 
 @code {
     private string newTodoTitle;
@@ -38,18 +35,18 @@
     {
         if (!string.IsNullOrWhiteSpace(newTodoTitle))
         {
-            TodoService.AddTodoItem(new BlazorServerAppDemo.Models.TodoItem { Title = newTodoTitle });
+            TodoService.AddTodoItem(new TodoItemModel { Title = newTodoTitle });
             newTodoTitle = string.Empty;
         }
     }
 
-    private void ToggleTodoItem(int id, bool isChecked)
+    private void RemoveTodoItem(TodoItemModel item)
     {
-        TodoService.ToggleTodoItem(id, isChecked);
+        TodoService.RemoveTodoItem(item.Id);
     }
 
-    private void RemoveTodoItem(int id)
+    private void MarkAsComplete(TodoItemModel item, bool isComplete)
     {
-        TodoService.RemoveTodoItem(id);
+        TodoService.ToggleTodoItem(item.Id, isComplete);
     }
 }

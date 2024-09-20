@@ -4,11 +4,11 @@ namespace BlazorServerAppDemo.Services;
 
 public class TodoService
 {
-    private readonly List<TodoItem> _todos = new();
+    private readonly List<TodoItemModel> _todos = new();
 
-    public IEnumerable<TodoItem> GetTodos() => _todos;
+    public IEnumerable<TodoItemModel> GetTodos() => _todos;
 
-    public void AddTodoItem(TodoItem item)
+    public void AddTodoItem(TodoItemModel item)
     {
         item.Id = _todos.Count + 1;
         _todos.Add(item);
@@ -19,7 +19,7 @@ public class TodoService
         var todo = _todos.FirstOrDefault(t => t.Id == id);
         if (todo != null)
         {
-            todo.IsCompleted = isCompleted;
+            todo.IsComplete = isCompleted;
         }
     }
 

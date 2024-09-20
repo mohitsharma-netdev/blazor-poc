@@ -1,0 +1,23 @@
+﻿@code {
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public bool IsComplete { get; set; }
+    [Parameter]
+    public EventCallback OnRemove { get; set; }
+    [Parameter]
+    public EventCallback<bool> OnCompleteChanged { get; set; }
+}
+
+<div>
+    <input type="checkbox" checked="@IsComplete" @onchange="HandleCompleteChanged" />
+    <span style="text-decoration: @(IsComplete ? "line-through" : "none")">@Title</span>
+    <button @onclick="OnRemove" class="btn btn-sm btn-outline-danger pt-0 pb-0 ps-1 pe-1 ms-4">x</button>
+</div>
+
+@code {
+    private void HandleCompleteChanged(ChangeEventArgs e)
+    {
+        OnCompleteChanged.InvokeAsync((bool)e.Value);
+    }
+}
