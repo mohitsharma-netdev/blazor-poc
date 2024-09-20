@@ -15,6 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TodoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddHttpClient(); // Injects HttpClient to the Controllers
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5000/") });
+
 #region JWT Authentication
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -57,6 +60,16 @@ builder.Services.AddSwaggerGen();
 
 #endregion
 
+builder.Services.AddCors(policy => {
+
+    policy.AddPolicy("CorsPolicy_Allow_Blazar_App", builder =>
+      builder.WithOrigins("https://*:7208/")
+        .SetIsOriginAllowedToAllowWildcardSubdomains()
+        .AllowAnyOrigin()
+        .AllowAnyHeader()
+
+ );
+});
 
 var app = builder.Build();
 
@@ -75,6 +88,8 @@ app.UseAuthentication();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("CorsPolicy_Allow_Blazar_App");
 
 app.MapControllers();
 

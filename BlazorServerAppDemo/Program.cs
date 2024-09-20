@@ -17,7 +17,10 @@ namespace BlazorServerAppDemo
             // Register the TodoService (depedency injections, configuring services)
             builder.Services.AddScoped<ITodoService, TodoService>();
 
-            builder.Services.AddScoped(sp => new HttpClient ());
+            builder.Services.AddScoped(sp => new HttpClient
+            {
+                BaseAddress = new Uri("https://localhost:8001")
+            });
 
             var app = builder.Build();
 
