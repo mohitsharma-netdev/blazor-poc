@@ -31,7 +31,7 @@ public class TodoController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<TodoItem>> GetTodoItem(int id)
     {
-        var todoItem = await _context.TodoItems.FindAsync(id);
+        var todoItem = await _context.TodoItems.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
 
         if (todoItem == null)
         {
@@ -58,7 +58,7 @@ public class TodoController : ControllerBase
         {
             return BadRequest();
         }
-
+        _context.ChangeTracker.Clear();
         _context.Entry(todoItem).State = EntityState.Modified;
 
         try
