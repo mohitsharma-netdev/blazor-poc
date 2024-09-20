@@ -1,13 +1,19 @@
 #region Imports
 
 using System.Text;
+using FrontendWebApi.Data;
 using FrontEndWebAPI.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 #endregion
+
+// Configure Entity Framework and SQL Server
+builder.Services.AddDbContext<TodoContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 #region JWT Authentication
 
